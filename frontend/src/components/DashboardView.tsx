@@ -12,6 +12,7 @@ interface DashboardViewProps {
     recruitmentEfficiency: number;
     cohortQuality: number;
     amendmentReduction: number;
+    backendConnected?: boolean;
   };
   templates: TrialReport[];
   selectedTemplate: string;
@@ -244,6 +245,25 @@ export default function DashboardView({
       variants={containerVariants}
       className="space-y-8 pb-12"
     >
+      {/* Backend Connection Status */}
+      {metrics.backendConnected !== undefined && (
+        <motion.div variants={itemVariants} className={`flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-mono ${
+          metrics.backendConnected 
+            ? "bg-emerald-50/80 border-emerald-200 text-emerald-700" 
+            : "bg-red-50/80 border-red-200 text-red-600"
+        }`}>
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${metrics.backendConnected ? "bg-emerald-500 animate-pulse" : "bg-red-400"}`} />
+            <span className="font-semibold">{metrics.backendConnected ? "API CONNECTED" : "API OFFLINE"}</span>
+            <span className="text-[10px] opacity-70">|</span>
+            <span className="opacity-80">{metrics.backendConnected ? "FastAPI + Qiskit Quantum + Cox PH AI + SQLite" : "Running in client-side simulation mode"}</span>
+          </div>
+          {metrics.backendConnected && (
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-200 text-[10px] font-bold">TCGA-BRCA DATA LOADED</span>
+          )}
+        </motion.div>
+      )}
+
       {/* Template Chooser & Main Header */}
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div>

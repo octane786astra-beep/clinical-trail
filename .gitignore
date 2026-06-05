@@ -40,3 +40,16 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+.env.local
+.env.*.local
+
