@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ViewType, TrialReport, CompilerLog, ActiveConstraint, OptimizationCore } from "./types";
 import DnaBackground from "./components/DnaBackground";
 import Sidebar from "./components/Sidebar";
@@ -7,9 +7,10 @@ import DashboardView from "./components/DashboardView";
 import EditorView from "./components/EditorView";
 import OptimizeView from "./components/OptimizeView";
 import ReportsView from "./components/ReportsView";
+import LandingView from "./components/LandingView";
 
 export default function App() {
-  // Navigation states
+  // Navigation states (now defaulting to DASHBOARD since landing is always rendered on top)
   const [currentView, setCurrentView] = useState<ViewType>(ViewType.DASHBOARD);
 
   // Active templates state database
@@ -59,72 +60,18 @@ export default function App() {
 
   // DSL template codes matching each ID
   const dslTemplates: Record<string, string> = {
-    "oncology-phase-ii": `trial Phase2OncologyAdaptive {
-  target_enrollment = 120;
-  therapeutic_area = "Oncology";
-  phases = [Phase2_Adaptive];
-
-  # Precision bio-marker alignment
-  biomarkers = ["EGFR-mutated", "KRAS-wildtype"];
-
-  location_sites = [
-    "Mayo Clinic,MN", 
-    "MD Anderson,TX", 
-    "Dana-Farber,MA"
-  ];
-
-  # Performance and safety solvers
-  quantum_annealing = active;
-  minimize_feasibility_risk = high;
-  recruitment_velocity_target = max;
-}`,
-    "cardio-genetic": `trial Phase3CardioGenetic {
-  target_enrollment = 450;
-  therapeutic_area = "Cardiology";
-  phases = [Phase3_Randomized];
-
-  biomarkers = ["ACE2-expressed", "KCNQ1-variant"];
-
-  location_sites = [
-    "MD Anderson,TX",
-    "Stanford Systems,CA",
-    "Mayo Clinic,MN"
-  ];
-
-  quantum_annealing = active;
-  minimize_feasibility_risk = normal;
-  recruitment_velocity_target = balanced;
-}`,
-    "neuro-stratification": `trial Phase1NeuroStratified {
-  target_enrollment = 85;
-  therapeutic_area = "Neurology";
-  phases = [Phase1_DoseEscalation];
-
-  biomarkers = ["APOE4-carrier", "Amyloid-Beta-positive"];
-
-  location_sites = [
-    "Stanford Systems,CA", 
-    "Mayo Clinic,MN", 
-    "Dana-Farber,MA"
-  ];
-
-  quantum_annealing = active;
-  minimize_feasibility_risk = extreme;
-  recruitment_velocity_target = quick;
-}`,
+    "oncology-phase-ii": `trial Phase2OncologyAdaptive {\n  target_enrollment = 120;\n  therapeutic_area = "Oncology";\n  phases = [Phase2_Adaptive];\n\n  # Precision bio-marker alignment\n  biomarkers = ["EGFR-mutated", "KRAS-wildtype"];\n\n  location_sites = [\n    "Mayo Clinic,MN", \n    "MD Anderson,TX", \n    "Dana-Farber,MA"\n  ];\n\n  # Performance and safety solvers\n  quantum_annealing = active;\n  minimize_feasibility_risk = high;\n  recruitment_velocity_target = max;\n}`,
+    "cardio-genetic": `trial Phase3CardioGenetic {\n  target_enrollment = 450;\n  therapeutic_area = "Cardiology";\n  phases = [Phase3_Randomized];\n\n  biomarkers = ["ACE2-expressed", "KCNQ1-variant"];\n\n  location_sites = [\n    "MD Anderson,TX",\n    "Stanford Systems,CA",\n    "Mayo Clinic,MN"\n  ];\n\n  quantum_annealing = active;\n  minimize_feasibility_risk = normal;\n  recruitment_velocity_target = balanced;\n}`,
+    "neuro-stratification": `trial Phase1NeuroStratified {\n  target_enrollment = 85;\n  therapeutic_area = "Neurology";\n  phases = [Phase1_DoseEscalation];\n\n  biomarkers = ["APOE4-carrier", "Amyloid-Beta-positive"];\n\n  location_sites = [\n    "Stanford Systems,CA", \n    "Mayo Clinic,MN", \n    "Dana-Farber,MA"\n  ];\n\n  quantum_annealing = active;\n  minimize_feasibility_risk = extreme;\n  recruitment_velocity_target = quick;\n}`,
   };
 
-  // State mapping active DSL codes
   const [dslCode, setDslCode] = useState<string>(dslTemplates["oncology-phase-ii"]);
 
-  // Set code when template changes
   const handleSelectTemplate = (id: string) => {
     setSelectedTemplateId(id);
     setDslCode(dslTemplates[id]);
-    // Clear out old states or reset logs slightly to indicate context shift
     setCompilerLogs([]);
     setIsCompiledSuccessfully(false);
-    // Reset optimizer ring progress
     setOptimizationSteps((prev) =>
       prev.map((step) => ({
         ...step,
@@ -135,12 +82,10 @@ export default function App() {
     );
   };
 
-  // Live Metric multipliers modifying values dynamically based on compile state
   const [isCompiledSuccessfully, setIsCompiledSuccessfully] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const [compilerLogs, setCompilerLogs] = useState<CompilerLog[]>([]);
 
-  // Constraints representation
   const [constraints, setConstraints] = useState<ActiveConstraint[]>([
     { id: "reg-compliance", name: "FDA Regulatory Lock", status: "satisfied", category: "Regulatory", score: 95 },
     { id: "op-feasibility", name: "Operational Site Load", status: "active", category: "Feasibility", score: 70 },
@@ -148,7 +93,6 @@ export default function App() {
     { id: "budgetary-alloc", name: "Budget Cap Allocation Limit", status: "satisfied", category: "Budgetary", score: 90 },
   ]);
 
-  // Optimization steps representing rings and concentric solver logs
   const [optimizationSteps, setOptimizationSteps] = useState<OptimizationCore[]>([
     {
       id: "cohort-stratification",
@@ -190,7 +134,6 @@ export default function App() {
 
   const [isOptimizing, setIsOptimizing] = useState(false);
 
-  // Trigger dynamic step-by-step compiler logging
   const handleCompile = () => {
     if (isCompiling) return;
     setIsCompiling(true);
@@ -203,13 +146,13 @@ export default function App() {
       { msg: "» LEXER GENERATING TOKENS FOR: " + selectedTemplateId, type: "info" as const },
       { msg: "» TOKEN VALIDATION PASS: 37 key tokens parsed cleanly.", type: "success" as const },
       { msg: "» COMPRESSING AST OBJECT NODES (Abstract Syntax Tree)...", type: "info" as const },
-      { msg: "» SEMANTIC AUDIT: Checking eligibility restrictions vs FDA Title-21 CFR regulations...", type: "info" as const },
+      { msg: "» SEMANTIC AUDIT: Checking eligibility vs FDA Title-21 CFR...", type: "info" as const },
       { msg: "» CHECK: Biomarkers exclusion rules found. Genetic cohort matching triggered.", type: "success" as const },
-      { msg: "» WARNING: Low-frequency exclusion parameter detected. Expanding recruitment search depth.", type: "warning" as const },
-      { msg: "» OPTIMIZING TARGET SITE COORDINATES... Mayo Clinic, MD Anderson, Stanford, Boston.", type: "info" as const },
+      { msg: "» WARNING: Low-frequency exclusion parameter detected. Expanding search depth.", type: "warning" as const },
+      { msg: "» OPTIMIZING TARGET SITE COORDINATES... Mayo Clinic, MD Anderson...", type: "info" as const },
       { msg: "» GENERATING OPTIMAL QUANTUM COMPILERS FOR ADAPTIVE TRIAL DESIGN...", type: "info" as const },
       { msg: "» COMPILATION SECURE. AST SIGNATURE: Hash/md5-256x9011a8b.", type: "system" as const },
-      { msg: "» SUCCESS: COPERNICUS DSL BUILT SUCCESSFULLY. PROTOCOL UNLOCKED ON HARDWARE CLUSTERS.", type: "success" as const },
+      { msg: "» SUCCESS: COPERNICUS DSL BUILT SUCCESSFULLY.", type: "success" as const },
     ];
 
     let currentStep = 0;
@@ -231,7 +174,6 @@ export default function App() {
         setIsCompiling(false);
         setIsCompiledSuccessfully(true);
 
-        // Mutate constraints scores to reflect compiled optimizations!
         setConstraints((prev) =>
           prev.map((c) => ({
             ...c,
@@ -240,20 +182,16 @@ export default function App() {
           }))
         );
 
-        // Auto move to visual optimizer step
         setCurrentView(ViewType.OPTIMIZE);
-        // Automatically start the optimization solver
         triggerQuantumSimulation();
       }
     }, 450);
   };
 
-  // Concentric Optimization Rings mathematical simulation
   const triggerQuantumSimulation = () => {
     if (isOptimizing) return;
     setIsOptimizing(true);
 
-    // Initial reset
     setOptimizationSteps((prev) =>
       prev.map((step) => ({
         ...step,
@@ -263,7 +201,6 @@ export default function App() {
       }))
     );
 
-    // Simulated progress tick loops for each step sequentially
     let activeStepIdx = 0;
     const totalSteps = 3;
 
@@ -279,7 +216,6 @@ export default function App() {
             step.status = "completed";
             step.eta = "Done";
 
-            // Inject optimized metrics inside steps!
             if (step.id === "cohort-stratification") {
               step.metrics = [
                 { label: "Patient Match Count", value: "2,480 Candidates" },
@@ -296,7 +232,6 @@ export default function App() {
                 { label: "Amendment Protection", value: "98% Reduction" },
               ];
             }
-
             activeStepIdx++;
           } else {
             step.status = "running";
@@ -308,7 +243,6 @@ export default function App() {
         if (activeStepIdx >= totalSteps) {
           clearInterval(timer);
           setIsOptimizing(false);
-          // Transition template values to their fully optimized states in metadata list!
           setTemplates((prev) =>
             prev.map((repr) => {
               if (repr.id === selectedTemplateId) {
@@ -323,27 +257,22 @@ export default function App() {
             })
           );
         }
-
         return next;
       });
     }, 300);
   };
 
-  // Reset simulator action
   const handleResetSimulator = () => {
     setIsCompiledSuccessfully(false);
     setIsCompiling(false);
     setIsOptimizing(false);
     setCompilerLogs([]);
-    
-    // Restore default baseline stats
     setConstraints([
       { id: "reg-compliance", name: "FDA Regulatory Lock", status: "satisfied", category: "Regulatory", score: 95 },
       { id: "op-feasibility", name: "Operational Site Load", status: "active", category: "Feasibility", score: 70 },
       { id: "cohort-exclusion", name: "Dropout Risk Protection", status: "active", category: "Feasibility", score: 64 },
       { id: "budgetary-alloc", name: "Budget Cap Allocation Limit", status: "satisfied", category: "Budgetary", score: 90 },
     ]);
-
     setOptimizationSteps((prev) =>
       prev.map((step) => ({
         ...step,
@@ -358,48 +287,8 @@ export default function App() {
     );
   };
 
-  // Interactive Actual PDF/Technical Protocol Downloader using Blob Object
   const handleDownloadReport = (report: TrialReport) => {
-    const reportText = `========================================================================
-CLINICAL TRIAL DECISION MATRIX - COPERNICUS PROTOCOL REPORT
-========================================================================
-Document Unique Key : SHA-256/${report.protocolKey}
-Archived Stamp      : ${report.createdAt}
-Audit Status        : ${report.status}
-Lead Investigator   : ${report.author}
-
-------------------------------------------------------------------------
-PROTOCOL ARCHITECTURAL SPECIFICATION & CLINICAL PARAMS
-------------------------------------------------------------------------
-Trial Registry Name : ${report.title}
-Therapeutic Sector  : ${report.therapeuticArea}
-Required Phase      : ${report.phase}
-Subject Cohort Cap  : ${report.targetEnrollment} Patients
-Expected Feasibility: ${report.optimizedFeasibility}%
-Estimated CapEx Saved: ${report.expectedCostSaving}
-
-------------------------------------------------------------------------
-OPTIMIZED QUANTUM PATIENT CRITERIA (COPERNICUS-DSL)
-------------------------------------------------------------------------
-- Genetic Biomarkers Matched: Expression-mutant alignments enabled.
-- Mapped Target Multi-Site Hubs:
-  * Minnesota Mayo Clinic Healthcare Facility
-  * Houston MD Anderson Strategic Medical Vault
-  * Palo Alto Stanford Hospital Clusters
-  * Boston Dana-Farber Oncology Research Clinics
-
-------------------------------------------------------------------------
-Institutional Compliance Lock (FDA 21 CFR Part 11 Audit File)
-------------------------------------------------------------------------
-The digital hash verified below certifies that the abstract rules lexed 
-under the Copernicus-DSL compiler conform strictly to institutional review board
-feasibility criteria, HIPAA metadata isolation, and automated patient safety caps.
-
-REPRESENTATIVE DIGITAL CODE: [MD5-COPERNICUS-SOU-Z982181]
-========================================================================
-`;
-
-    // Package to download file
+    const reportText = `========================================================================\nCLINICAL TRIAL DECISION MATRIX - COPERNICUS PROTOCOL REPORT\n========================================================================\nDocument Unique Key : SHA-256/${report.protocolKey}\nArchived Stamp      : ${report.createdAt}\nAudit Status        : ${report.status}\nLead Investigator   : ${report.author}\n\n------------------------------------------------------------------------\nPROTOCOL ARCHITECTURAL SPECIFICATION & CLINICAL PARAMS\n------------------------------------------------------------------------\nTrial Registry Name : ${report.title}\nTherapeutic Sector  : ${report.therapeuticArea}\nRequired Phase      : ${report.phase}\nSubject Cohort Cap  : ${report.targetEnrollment} Patients\nExpected Feasibility: ${report.optimizedFeasibility}%\nEstimated CapEx Saved: ${report.expectedCostSaving}\n\n------------------------------------------------------------------------\nOPTIMIZED QUANTUM PATIENT CRITERIA (COPERNICUS-DSL)\n------------------------------------------------------------------------\n- Genetic Biomarkers Matched: Expression-mutant alignments enabled.\n- Mapped Target Multi-Site Hubs:\n  * Minnesota Mayo Clinic Healthcare Facility\n  * Houston MD Anderson Strategic Medical Vault\n  * Palo Alto Stanford Hospital Clusters\n  * Boston Dana-Farber Oncology Research Clinics\n\n------------------------------------------------------------------------\nInstitutional Compliance Lock (FDA 21 CFR Part 11 Audit File)\n------------------------------------------------------------------------\nThe digital hash verified below certifies that the abstract rules lexed \nunder the Copernicus-DSL compiler conform strictly to institutional review board\nfeasibility criteria, HIPAA metadata isolation, and automated patient safety caps.\n\nREPRESENTATIVE DIGITAL CODE: [MD5-COPERNICUS-SOU-Z982181]\n========================================================================\n`;
     const blob = new Blob([reportText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -410,80 +299,97 @@ REPRESENTATIVE DIGITAL CODE: [MD5-COPERNICUS-SOU-Z982181]
     document.body.removeChild(link);
   };
 
-  // Get active template attributes to feed metric cards
-  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) || templates[0];
+  const selectedTemplateAttr = templates.find((t) => t.id === selectedTemplateId) || templates[0];
   const dynamicMetrics = {
     runtime: isCompiledSuccessfully ? "420 Microseconds" : "Calculating...",
-    feasibilityScore: isCompiledSuccessfully ? selectedTemplate.optimizedFeasibility : 64,
-    costReduction: isCompiledSuccessfully ? selectedTemplate.expectedCostSaving : "$0.0",
+    feasibilityScore: isCompiledSuccessfully ? selectedTemplateAttr.optimizedFeasibility : 64,
+    costReduction: isCompiledSuccessfully ? selectedTemplateAttr.expectedCostSaving : "$0.0",
     recruitmentEfficiency: isCompiledSuccessfully ? 97 : 58,
     cohortQuality: isCompiledSuccessfully ? 91 : 48,
     amendmentReduction: isCompiledSuccessfully ? 90 : 0,
   };
 
   return (
-    <div className="relative min-h-screen text-slate-100 font-sans flex overflow-hidden selection:bg-cyan-500/30 selection:text-white">
-      {/* 3D Animated Projection DNA background helix */}
+    <div className="relative min-h-screen font-sans flex flex-col bg-[#F8FAFC]">
+      {/* Interactive 3D DNA Background */}
       <DnaBackground />
 
-      {/* Persistent global layout container */}
-      <div className="flex w-full h-screen overflow-hidden">
-        {/* Navigation Sidebar */}
-        <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-
-        {/* Primary right side main body area */}
-        <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-          {/* Header Panel */}
-          <Header
-            compilerStatus={isCompiling ? "compiling" : isCompiledSuccessfully ? "success" : "idle"}
-            simulationActive={isOptimizing}
-            onReset={handleResetSimulator}
-            systemMetrics={dynamicMetrics}
-          />
-
-          {/* Scrollable screen view port router */}
-          <main className="flex-1 overflow-y-auto px-8 py-8">
-            {currentView === ViewType.DASHBOARD && (
-              <DashboardView
-                metrics={dynamicMetrics}
-                templates={templates}
-                selectedTemplate={selectedTemplateId}
-                onSelectTemplate={handleSelectTemplate}
-                onNavigateToOptimize={() => setCurrentView(ViewType.EDITOR)}
-              />
-            )}
-
-            {currentView === ViewType.EDITOR && (
-              <EditorView
-                dslCode={dslCode}
-                onDslCodeChange={setDslCode}
-                compilerLogs={compilerLogs}
-                onCompile={handleCompile}
-                isCompiling={isCompiling}
-                constraints={constraints}
-                onUpdateConstraintScore={() => {}}
-              />
-            )}
-
-            {currentView === ViewType.OPTIMIZE && (
-              <OptimizeView
-                optimizationSteps={optimizationSteps}
-                onTriggerOptimization={triggerQuantumSimulation}
-                isOptimizing={isOptimizing}
-                selectedTemplateTitle={selectedTemplate.title}
-              />
-            )}
-
-            {currentView === ViewType.REPORTS && (
-              <ReportsView
-                reports={templates}
-                onTriggerDownload={handleDownloadReport}
-                selectedTemplateId={selectedTemplateId}
-              />
-            )}
-          </main>
-        </div>
+      {/* Hero / Landing Section */}
+      <div id="landing-section" className="w-full relative z-10">
+        <LandingView onEnterApp={() => document.getElementById('app-workspace')?.scrollIntoView({ behavior: 'smooth' })} />
       </div>
+
+      {/* Main App Workspace */}
+      <div id="app-workspace" className="flex w-full min-h-screen relative z-10 bg-[#F8FAFC] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <div className="sticky top-0 h-screen shrink-0 z-30">
+          <Sidebar currentView={currentView} onViewChange={setCurrentView} onLogoClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
+        </div>
+
+        <div className="flex-1 flex flex-col min-h-screen relative z-20">
+          <div className="sticky top-0 z-20 bg-[#F8FAFC]/90 backdrop-blur-md">
+            <Header
+              compilerStatus={isCompiling ? "compiling" : isCompiledSuccessfully ? "success" : "idle"}
+              simulationActive={isOptimizing}
+              onReset={handleResetSimulator}
+              systemMetrics={dynamicMetrics}
+            />
+          </div>
+
+          <main className="flex-1 px-8 py-8 bg-[#F8FAFC]">
+              {currentView === ViewType.DASHBOARD && (
+                <DashboardView
+                  metrics={dynamicMetrics}
+                  templates={templates}
+                  selectedTemplate={selectedTemplateId}
+                  onSelectTemplate={handleSelectTemplate}
+                  onNavigateToOptimize={() => setCurrentView(ViewType.EDITOR)}
+                />
+              )}
+
+              {currentView === ViewType.EDITOR && (
+                <EditorView
+                  dslCode={dslCode}
+                  onDslCodeChange={setDslCode}
+                  compilerLogs={compilerLogs}
+                  onCompile={handleCompile}
+                  isCompiling={isCompiling}
+                  constraints={constraints}
+                  onUpdateConstraintScore={() => {}}
+                />
+              )}
+
+              {currentView === ViewType.OPTIMIZE && (
+                <OptimizeView
+                  optimizationSteps={optimizationSteps}
+                  onTriggerOptimization={triggerQuantumSimulation}
+                  isOptimizing={isOptimizing}
+                  selectedTemplateTitle={selectedTemplateAttr.title}
+                />
+              )}
+
+              {currentView === ViewType.REPORTS && (
+                <ReportsView
+                  reports={templates}
+                  onTriggerDownload={handleDownloadReport}
+                  selectedTemplateId={selectedTemplateId}
+                />
+              )}
+
+              {/* Placeholders for new menu items */}
+              {[ViewType.COHORT, ViewType.SIMULATOR, ViewType.AUDIT, ViewType.DOCUMENTS, ViewType.SETTINGS].includes(currentView) && (
+                <div className="flex items-center justify-center h-full">
+                  <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center shadow-sm max-w-md">
+                    <h2 className="text-xl font-serif text-[#0F4C81] mb-2">{currentView.charAt(0).toUpperCase() + currentView.slice(1)} Module</h2>
+                    <p className="text-sm text-slate-500">This module is part of the Enterprise Suite and is currently locked or under active development.</p>
+                    <button onClick={() => setCurrentView(ViewType.DASHBOARD)} className="mt-6 text-sm text-[#2563EB] hover:underline">
+                      Return to Dashboard
+                    </button>
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
+        </div>
     </div>
   );
 }

@@ -68,13 +68,13 @@ export default function OptimizeView({
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 glass rounded-2xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-xl font-serif font-bold tracking-tight text-[#0F4C81] flex items-center gap-2">
             Quantum Multi-Agent Stratification & Site Optimization
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Running optimization solver matrices for: <span className="text-cyan-400 font-bold font-mono">{selectedTemplateTitle}</span>
+          <p className="text-xs text-slate-500 mt-1">
+            Running optimization solver matrices for: <span className="text-[#2563EB] font-bold font-mono">{selectedTemplateTitle}</span>
           </p>
         </div>
 
@@ -83,13 +83,13 @@ export default function OptimizeView({
           disabled={isOptimizing}
           className={`flex items-center gap-2 px-5 py-3 text-xs font-bold font-mono tracking-wider rounded-xl uppercase transition-all ${
             isOptimizing
-              ? "bg-purple-950/40 border border-purple-500/30 text-purple-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-cyan-500 to-indigo-600 text-white cursor-pointer shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 hover:scale-[1.02]"
+              ? "bg-purple-50 border border-purple-200 text-purple-600 cursor-not-allowed"
+              : "bg-gradient-to-r from-[#0F4C81] to-[#2563EB] text-white cursor-pointer shadow-md shadow-blue-500/20 hover:shadow-lg hover:-translate-y-0.5"
           }`}
         >
           {isOptimizing ? (
             <>
-              <Cpu className="w-4 h-4 animate-spin text-purple-400" /> SOLVERS SOLVING...
+              <Cpu className="w-4 h-4 animate-spin text-purple-600" /> SOLVERS SOLVING...
             </>
           ) : (
             <>
@@ -107,30 +107,30 @@ export default function OptimizeView({
           const circumference = 2 * Math.PI * radius;
           const offset = circumference - (step.progress / 100) * circumference;
 
-          let ringColor = "stroke-cyan-500";
-          let textColor = "text-cyan-400";
+          let ringColor = "stroke-[#2563EB]";
+          let textColor = "text-[#2563EB]";
           if (step.id === "site-selection") {
-            ringColor = "stroke-indigo-500";
-            textColor = "text-indigo-400";
+            ringColor = "stroke-[#14B8A6]";
+            textColor = "text-[#14B8A6]";
           } else if (step.id === "trial-simulation") {
             ringColor = "stroke-purple-500";
-            textColor = "text-purple-400";
+            textColor = "text-purple-600";
           }
 
           return (
             <div
               key={step.id}
-              className={`p-6 glass rounded-2xl flex flex-col items-center text-center relative overflow-hidden group hover:border-cyan-500/25 duration-300 transition-all ${
-                step.progress > 0 && step.progress < 100 ? "glow-cyan" : ""
+              className={`p-6 bg-white border border-slate-200 rounded-2xl flex flex-col items-center text-center relative overflow-hidden group hover:border-[#2563EB]/40 hover:shadow-lg duration-300 transition-all ${
+                step.progress > 0 && step.progress < 100 ? "shadow-[0_0_15px_rgba(37,99,235,0.15)] border-[#2563EB]/40" : ""
               }`}
             >
               {/* Backlight flare glow */}
               {isOptimizing && (
-                <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-0 right-0 w-16 h-16 bg-[#2563EB]/10 rounded-full blur-2xl animate-pulse" />
               )}
 
               {/* Step Label Badge */}
-              <span className="text-[10px] font-mono tracking-wider font-semibold text-slate-500 uppercase">
+              <span className="text-[10px] font-mono tracking-wider font-bold text-slate-500 uppercase">
                 SOLVER INSTANCE: {step.id}
               </span>
 
@@ -142,7 +142,7 @@ export default function OptimizeView({
                     cx="64"
                     cy="64"
                     r={radius}
-                    className="stroke-slate-950"
+                    className="stroke-slate-100"
                     strokeWidth="8"
                     fill="transparent"
                   />
@@ -162,7 +162,7 @@ export default function OptimizeView({
 
                 {/* Centered progress percentage */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-extrabold text-slate-100 font-mono tracking-tighter">
+                  <span className="text-2xl font-extrabold text-slate-900 font-mono tracking-tighter">
                     {step.progress}%
                   </span>
                   <span className="text-[8px] font-bold text-slate-400 font-mono uppercase">
@@ -173,24 +173,24 @@ export default function OptimizeView({
 
               {/* Details text descriptors */}
               <div className="space-y-1.5 w-full">
-                <h3 className="text-sm font-bold text-slate-200">{step.name}</h3>
-                <p className="text-[11px] text-slate-400 leading-normal min-h-[32px]">
+                <h3 className="text-sm font-bold text-slate-900">{step.name}</h3>
+                <p className="text-[11px] text-slate-500 leading-normal min-h-[32px]">
                   {step.details}
                 </p>
               </div>
 
               {/* ETA Display footer */}
-              <div className="mt-5 w-full border-t border-white/5 pt-4 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-slate-500">REMAINING ETA</span>
-                <span className={`font-semibold ${textColor}`}>{step.eta}</span>
+              <div className="mt-5 w-full border-t border-slate-100 pt-4 flex items-center justify-between text-[11px] font-mono font-bold">
+                <span className="text-slate-400">REMAINING ETA</span>
+                <span className={`${textColor}`}>{step.eta}</span>
               </div>
 
               {/* Mini variables log table */}
-              <div className="mt-4 w-full bg-slate-950/80 rounded-xl p-3 border border-white/5 space-y-1.5">
+              <div className="mt-4 w-full bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1.5">
                 {step.metrics.map((met, idx) => (
                   <div key={idx} className="flex justify-between items-center text-[10px] font-mono">
                     <span className="text-slate-500">{met.label}</span>
-                    <span className="text-slate-300 font-medium">{met.value}</span>
+                    <span className="text-slate-800 font-bold">{met.value}</span>
                   </div>
                 ))}
               </div>
@@ -201,33 +201,33 @@ export default function OptimizeView({
 
       {/* Geospatial Site Selection Simulation */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 p-6 glass rounded-2xl flex flex-col">
+        <div className="lg:col-span-3 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Globe className="w-5 h-5 text-cyan-400" /> Geographic Optimization Map Mesh
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-[#2563EB]" /> Geographic Optimization Map Mesh
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Visualizing physical site clusters selected by the AI constraint solver for genetic stratification pools.
               </p>
             </div>
           </div>
 
-          {/* Map Mesh simulator canvas box */}
-          <div className="flex-1 bg-slate-950 text-slate-600 rounded-xl border border-white/5 p-4 flex flex-col justify-between min-h-[220px] relative overflow-hidden select-none">
+          {/* Map Mesh simulator canvas box (Light Mode interpretation) */}
+          <div className="flex-1 bg-[#F8FAFC] text-slate-600 rounded-xl border border-slate-200 p-4 flex flex-col justify-between min-h-[220px] relative overflow-hidden select-none">
             {/* Ambient visual mesh lines */}
-            <div className="absolute inset-0 opacity-10 flex flex-col justify-between py-4 pointer-events-none">
-              <hr className="border-slate-400" />
-              <hr className="border-slate-400" />
-              <hr className="border-slate-400" />
-              <hr className="border-slate-400" />
+            <div className="absolute inset-0 opacity-20 flex flex-col justify-between py-4 pointer-events-none">
+              <hr className="border-slate-300" />
+              <hr className="border-slate-300" />
+              <hr className="border-slate-300" />
+              <hr className="border-slate-300" />
             </div>
             
-            <div className="absolute inset-0 opacity-10 flex justify-between px-4 pointer-events-none">
-              <div className="border-l border-slate-400 h-full" />
-              <div className="border-l border-slate-400 h-full" />
-              <div className="border-l border-slate-400 h-full" />
-              <div className="border-l border-slate-400 h-full" />
+            <div className="absolute inset-0 opacity-20 flex justify-between px-4 pointer-events-none">
+              <div className="border-l border-slate-300 h-full" />
+              <div className="border-l border-slate-300 h-full" />
+              <div className="border-l border-slate-300 h-full" />
+              <div className="border-l border-slate-300 h-full" />
             </div>
 
             {/* Custom high-tech nodes to represent sites on a grid */}
@@ -236,11 +236,11 @@ export default function OptimizeView({
               <button
                 type="button"
                 onClick={() => setSelectedSiteId(0)}
-                className="absolute top-[20%] left-[50%] flex flex-col items-center cursor-pointer group"
+                className="absolute top-[20%] left-[50%] flex flex-col items-center cursor-pointer group z-10"
               >
-                <div className="w-3.5 h-3.5 rounded-full bg-cyan-400 absolute animate-ping opacity-60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 relative border border-white flex items-center justify-center" />
-                <span className="text-[10px] font-mono text-cyan-400 bg-slate-950/90 border border-cyan-800/50 px-1.5 py-0.5 mt-1 rounded font-bold uppercase group-hover:border-cyan-400 group-hover:text-white transition-all">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#14B8A6] absolute animate-ping opacity-60" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#14B8A6] relative border-2 border-white shadow-sm" />
+                <span className="text-[10px] font-mono text-[#0F4C81] bg-white border border-slate-200 shadow-sm px-1.5 py-0.5 mt-1.5 rounded font-bold uppercase group-hover:border-[#14B8A6] group-hover:text-[#14B8A6] transition-all">
                   MN-MAYO
                 </span>
               </button>
@@ -249,11 +249,11 @@ export default function OptimizeView({
               <button
                 type="button"
                 onClick={() => setSelectedSiteId(1)}
-                className="absolute bottom-[25%] left-[45%] flex flex-col items-center cursor-pointer group"
+                className="absolute bottom-[25%] left-[45%] flex flex-col items-center cursor-pointer group z-10"
               >
-                <div className="w-3.5 h-3.5 rounded-full bg-indigo-500 absolute animate-custom-ping opacity-60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-indigo-400 relative border border-white" />
-                <span className="text-[10px] font-mono text-indigo-400 bg-slate-950/90 border border-indigo-800/50 px-1.5 py-0.5 mt-1 rounded font-bold uppercase group-hover:border-indigo-400 group-hover:text-white transition-all">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#2563EB] absolute animate-ping opacity-60" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#2563EB] relative border-2 border-white shadow-sm" />
+                <span className="text-[10px] font-mono text-[#0F4C81] bg-white border border-slate-200 shadow-sm px-1.5 py-0.5 mt-1.5 rounded font-bold uppercase group-hover:border-[#2563EB] group-hover:text-[#2563EB] transition-all">
                   TX-MD_AND
                 </span>
               </button>
@@ -262,11 +262,11 @@ export default function OptimizeView({
               <button
                 type="button"
                 onClick={() => setSelectedSiteId(2)}
-                className="absolute top-[40%] left-[15%] flex flex-col items-center cursor-pointer group"
+                className="absolute top-[40%] left-[15%] flex flex-col items-center cursor-pointer group z-10"
               >
                 <div className="w-3.5 h-3.5 rounded-full bg-purple-500 absolute animate-ping opacity-60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-purple-400 relative border border-white" />
-                <span className="text-[10px] font-mono text-purple-400 bg-slate-950/90 border border-purple-800/20 px-1.5 py-0.5 mt-1 rounded font-bold uppercase group-hover:border-purple-400 group-hover:text-white transition-all">
+                <div className="w-2.5 h-2.5 rounded-full bg-purple-500 relative border-2 border-white shadow-sm" />
+                <span className="text-[10px] font-mono text-[#0F4C81] bg-white border border-slate-200 shadow-sm px-1.5 py-0.5 mt-1.5 rounded font-bold uppercase group-hover:border-purple-600 group-hover:text-purple-600 transition-all">
                   CA-STAN
                 </span>
               </button>
@@ -275,19 +275,19 @@ export default function OptimizeView({
               <button
                 type="button"
                 onClick={() => setSelectedSiteId(3)}
-                className="absolute top-[18%] right-[15%] flex flex-col items-center cursor-pointer group"
+                className="absolute top-[18%] right-[15%] flex flex-col items-center cursor-pointer group z-10"
               >
-                <div className="w-3.5 h-3.5 rounded-full bg-cyan-400 absolute animate-ping opacity-60" />
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 relative border border-white" />
-                <span className="text-[10px] font-mono text-cyan-400 bg-slate-950/90 border border-cyan-800/20 px-1.5 py-0.5 mt-1 rounded font-bold uppercase group-hover:border-cyan-400 group-hover:text-white transition-all">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#10B981] absolute animate-ping opacity-60" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#10B981] relative border-2 border-white shadow-sm" />
+                <span className="text-[10px] font-mono text-[#0F4C81] bg-white border border-slate-200 shadow-sm px-1.5 py-0.5 mt-1.5 rounded font-bold uppercase group-hover:border-[#10B981] group-hover:text-[#10B981] transition-all">
                   MA-HARV
                 </span>
               </button>
             </div>
 
-            <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono pt-3 border-t border-white/5 relative z-10">
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-3 h-3 text-cyan-400" /> MULTI-SITE RESOLUTION: SATISFIED
+            <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono font-bold pt-3 border-t border-slate-200 relative z-10">
+              <span className="flex items-center gap-1.5 text-[#10B981]">
+                <MapPin className="w-3 h-3 text-[#10B981]" /> MULTI-SITE RESOLUTION: SATISFIED
               </span>
               <span>GPS SYNC ACTIVE</span>
             </div>
@@ -295,10 +295,10 @@ export default function OptimizeView({
         </div>
 
         {/* Selected Clinical Trial Sites Information */}
-        <div className="lg:col-span-2 p-6 glass rounded-2xl flex flex-col justify-between">
+        <div className="lg:col-span-2 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-200">Stratification Site Targets</h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h3 className="text-base font-bold text-slate-900">Stratification Site Targets</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
               Specific, highly compliant cluster healthcare locations mapped to this protocol. Click cards for diagnostic audits.
             </p>
           </div>
@@ -309,28 +309,28 @@ export default function OptimizeView({
                 type="button"
                 key={site.id}
                 onClick={() => setSelectedSiteId(site.id)}
-                className="p-3 bg-slate-950/80 rounded-xl border border-white/5 hover:border-cyan-500/20 hover:-translate-y-0.5 transition-all w-full text-left cursor-pointer group"
+                className="p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-[#2563EB] hover:-translate-y-0.5 hover:shadow-sm transition-all w-full text-left cursor-pointer group"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-200 leading-none group-hover:text-cyan-400 transition-colors">{site.name}</h4>
+                    <h4 className="text-xs font-bold text-slate-800 leading-none group-hover:text-[#2563EB] transition-colors">{site.name}</h4>
                     <p className="text-[10px] text-slate-500 mt-1 font-mono flex items-center gap-1">
-                      <MapPin className="w-2.5 h-2.5 text-slate-500" /> {site.location}
+                      <MapPin className="w-2.5 h-2.5 text-[#2563EB]" /> {site.location}
                     </p>
                   </div>
-                  <span className="text-[9px] font-bold text-emerald-400 font-mono bg-emerald-950/40 border border-emerald-800/30 px-2 py-0.5 rounded-full capitalize">
+                  <span className="text-[9px] font-bold text-[#10B981] font-mono bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full capitalize">
                     {site.efficiency}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-3 pt-2 border-t border-white/5 text-[10px] font-mono text-slate-400">
+                <div className="grid grid-cols-2 gap-4 mt-3 pt-2 border-t border-slate-200 text-[10px] font-mono">
                   <div>
-                    <span className="text-slate-500">GENETIC MATCH</span>
-                    <p className="text-white font-bold">{site.geneticMatch}%</p>
+                    <span className="text-slate-400 block font-bold mb-0.5">GENETIC MATCH</span>
+                    <p className="text-slate-900 font-bold">{site.geneticMatch}%</p>
                   </div>
                   <div>
-                    <span className="text-slate-500">ACTIVE POOL CAP</span>
-                    <p className="text-white font-bold">{site.cap} Candidates</p>
+                    <span className="text-slate-400 block font-bold mb-0.5">ACTIVE POOL CAP</span>
+                    <p className="text-slate-900 font-bold">{site.cap} Candidates</p>
                   </div>
                 </div>
               </button>
@@ -341,45 +341,45 @@ export default function OptimizeView({
 
       {/* Interactive Site Calibration Audit Modal */}
       {selectedSiteId !== null && (
-        <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl relative">
             <button
               onClick={() => setSelectedSiteId(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-indigo-950 border border-indigo-800 text-indigo-400 rounded-xl">
+              <div className="p-2 bg-blue-50 border border-blue-100 text-[#2563EB] rounded-xl">
                 <Server className="w-5 h-5 animate-pulse" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {optimizedSites[selectedSiteId].name}
                 </h3>
-                <span className="text-xs text-slate-400">{optimizedSites[selectedSiteId].location}</span>
+                <span className="text-xs text-slate-500 font-mono">{optimizedSites[selectedSiteId].location}</span>
               </div>
             </div>
 
             <div className="space-y-4 mb-6 font-mono text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-white/5 space-y-2">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">LEAD PRACTITIONER</span>
-                  <span className="text-white font-bold">{optimizedSites[selectedSiteId].chief}</span>
+                  <span className="text-slate-500 font-bold">LEAD PRACTITIONER</span>
+                  <span className="text-slate-900 font-bold">{optimizedSites[selectedSiteId].chief}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">MRI/GENETIC WORKLOAD</span>
-                  <span className="text-cyan-400 font-bold">{optimizedSites[selectedSiteId].queueCapacity}</span>
+                  <span className="text-slate-500 font-bold">MRI/GENETIC WORKLOAD</span>
+                  <span className="text-[#2563EB] font-bold">{optimizedSites[selectedSiteId].queueCapacity}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">DEVICE VERIFICATION</span>
-                  <span className="text-emerald-400 font-semibold">{optimizedSites[selectedSiteId].equipmentStatus}</span>
+                  <span className="text-slate-500 font-bold">DEVICE VERIFICATION</span>
+                  <span className="text-[#10B981] font-semibold">{optimizedSites[selectedSiteId].equipmentStatus}</span>
                 </div>
               </div>
 
-              <div className="p-3.5 bg-cyan-950/20 rounded-xl border border-cyan-800/20 text-slate-300 leading-relaxed text-[11px]">
-                <p className="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+              <div className="p-3.5 bg-emerald-50/50 rounded-xl border border-emerald-100 text-slate-600 leading-relaxed text-[11px]">
+                <p className="font-bold text-[#10B981] mb-1 flex items-center gap-1.5">
                   <CheckCircle className="w-3.5 h-3.5" /> SECURE DECRYPTION KEY OK:
                 </p>
                 Successfully logged real-time biomarker patient tracking with mayo/md security matrix systems under full HIPAA exclusion hashes.
@@ -392,13 +392,13 @@ export default function OptimizeView({
                   alert(`Direct connection verified! Successfully tested continuous calibration loop.`);
                   setSelectedSiteId(null);
                 }}
-                className="flex-1 py-2.5 bg-cyan-700 hover:bg-cyan-600 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+                className="flex-1 py-2.5 bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-sm"
               >
-                Execute Remote Diagnostics
+                Remote Diagnostics
               </button>
               <button
                 onClick={() => setSelectedSiteId(null)}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs border border-white/5 cursor-pointer"
+                className="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs border border-slate-200 cursor-pointer shadow-sm"
               >
                 Close Connection
               </button>

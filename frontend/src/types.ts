@@ -1,8 +1,14 @@
 export enum ViewType {
+  LANDING = "landing",
   DASHBOARD = "dashboard",
   EDITOR = "editor",
+  COHORT = "cohort",
   OPTIMIZE = "optimize",
+  SIMULATOR = "simulator",
   REPORTS = "reports",
+  AUDIT = "audit",
+  DOCUMENTS = "documents",
+  SETTINGS = "settings",
 }
 
 export interface MetricCardData {
