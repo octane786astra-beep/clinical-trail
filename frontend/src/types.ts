@@ -4,7 +4,7 @@ export enum ViewType {
   EDITOR = "editor",
   COHORT = "cohort",
   OPTIMIZE = "optimize",
-  SIMULATOR = "simulator",
+  GENOME_DATA = "genome_data",
   REPORTS = "reports",
   AUDIT = "audit",
   DOCUMENTS = "documents",

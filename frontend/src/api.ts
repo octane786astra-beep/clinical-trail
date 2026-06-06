@@ -3,7 +3,7 @@
  * Connects the React frontend to the FastAPI backend.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE = (import.meta as any).env?.VITE_API_URL || "http://localhost:8000";
 
 // ── Generic fetch wrapper ──────────────────────────────────────────────────
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
@@ -233,3 +233,12 @@ export async function getCompilerHistory(limit = 20) {
     `/compiler/history?limit=${limit}`
   );
 }
+
+// ── Patient Bulk Ingestion ────────────────────────────────────────────────
+export async function addPatientsBulk(patients: Array<Record<string, unknown>>) {
+  return apiFetch<{ status: string; inserted_count: number }>("/patients/bulk", {
+    method: "POST",
+    body: JSON.stringify(patients),
+  });
+}
+

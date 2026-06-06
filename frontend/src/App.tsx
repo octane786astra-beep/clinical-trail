@@ -9,6 +9,7 @@ import EditorView from "./components/EditorView";
 import OptimizeView from "./components/OptimizeView";
 import ReportsView from "./components/ReportsView";
 import LandingView from "./components/LandingView";
+import GenomeDataView from "./components/GenomeDataView";
 
 export default function App() {
   // Navigation states (now defaulting to DASHBOARD since landing is always rendered on top)
@@ -18,42 +19,42 @@ export default function App() {
   const [templates, setTemplates] = useState<TrialReport[]>([
     {
       id: "oncology-phase-ii",
-      title: "Oncology Phase II Adaptive Trial",
-      protocolKey: "ONCO-ADAP-P2-X78",
-      phase: "Phase II",
-      therapeuticArea: "Oncology",
-      targetEnrollment: 120,
+      title: "TCGA-BRCA Adaptive Immunotherapy (HER2+)",
+      protocolKey: "BRCA-ADAP-P2-NCT001",
+      phase: "Phase III",
+      therapeuticArea: "Oncology — Breast Cancer",
+      targetEnrollment: 200,
       optimizedFeasibility: 94,
-      expectedCostSaving: "$2.4M Saved",
+      expectedCostSaving: "₹2.1Cr Saved",
       status: "Approved",
       createdAt: "2026-05-12",
-      author: "Dr. Alex L.",
+      author: "Dr. Ram Murthy",
     },
     {
       id: "cardio-genetic",
-      title: "Cardiovascular Genetic Stratification",
-      protocolKey: "CARD-GEN-S99-R41",
+      title: "GLP-2 Agonist for Type 2 Diabetes — AIIMS",
+      protocolKey: "DM-AIIMS-P3-NCT002",
       phase: "Phase III",
-      therapeuticArea: "Cardiology",
-      targetEnrollment: 450,
+      therapeuticArea: "Endocrinology",
+      targetEnrollment: 200,
       optimizedFeasibility: 91,
-      expectedCostSaving: "$5.1M Saved",
+      expectedCostSaving: "₹3.8Cr Saved",
       status: "Audited",
       createdAt: "2026-05-28",
-      author: "Dr. Alex L.",
+      author: "Dr. Ram Murthy",
     },
     {
       id: "neuro-stratification",
-      title: "Neurodegenerative Cohort Optimizer",
-      protocolKey: "NEUR-STR-O42-M12",
-      phase: "Phase I-II",
-      therapeuticArea: "Neurology",
-      targetEnrollment: 85,
+      title: "ER+ Hormone Receptor Targeted Therapy",
+      protocolKey: "BRCA-MAYO-P3-NCT003",
+      phase: "Phase III",
+      therapeuticArea: "Oncology — Breast Cancer",
+      targetEnrollment: 400,
       optimizedFeasibility: 89,
-      expectedCostSaving: "$1.2M Saved",
+      expectedCostSaving: "₹1.9Cr Saved",
       status: "Draft",
       createdAt: "2026-06-03",
-      author: "Dr. Alex L.",
+      author: "Dr. Ram Murthy",
     },
   ]);
 
@@ -61,35 +62,35 @@ export default function App() {
 
   // DSL template codes matching each ID — uses the real backend DSL syntax
   const dslTemplates: Record<string, string> = {
-    "oncology-phase-ii": `TRIAL OncologyPhase2Adaptive {
-  PATIENT: age IN [25,70], diagnosis = "Infiltrating duct carcinoma, NOS"
+    "oncology-phase-ii": `TRIAL TCGA_BRCA_AdaptiveImmunotherapy {
+  PATIENT: age IN [30,75], diagnosis = "Infiltrating duct carcinoma, NOS"
   EXCLUDE: cardiac_history = true, insulin_dose > 40
   INCLUDE: gene_BRCA1 = 1
-  DURATION: months = 8
-  ARMS: treatment = "Immunotherapy", placebo = "control"
+  DURATION: months = 28
+  ARMS: treatment = "Immunotherapy_HER2", placebo = "control"
   MONITOR: safety = true
-  BUDGET: amount = 2400000
+  BUDGET: amount = 21000000
   SITES: count = 3
 }`,
-    "cardio-genetic": `TRIAL CardioGeneticPhase3 {
-  PATIENT: age IN [40,75], diagnosis = "Hypertension"
-  EXCLUDE: hba1c > 12
-  INCLUDE: gene_TP53 = 1
-  DURATION: months = 14
-  ARMS: drug = "ACE-Inhibitor", control = "standard_care"
+    "cardio-genetic": `TRIAL AIIMS_GLP2_DiabetesPhase3 {
+  PATIENT: age IN [35,65], diagnosis = "T2DM"
+  EXCLUDE: hba1c > 12, cardiac_history = true
+  INCLUDE: gene_TP53 = 0
+  DURATION: months = 18
+  ARMS: drug = "GLP2_Agonist", control = "standard_care"
   MONITOR: safety = true
-  BUDGET: amount = 5100000
+  BUDGET: amount = 38000000
   SITES: count = 4
 }`,
-    "neuro-stratification": `TRIAL NeuroStratifiedPhase1 {
-  PATIENT: age IN [55,85], diagnosis = "Alzheimer"
+    "neuro-stratification": `TRIAL BRCA_Mayo_HormoneTargeted {
+  PATIENT: age IN [40,80], diagnosis = "Lobular carcinoma, NOS"
   EXCLUDE: cardiac_history = true
-  INCLUDE: gene_BRCA1 = 0
-  DURATION: months = 6
-  ARMS: treatment = "Amyloid_Antibody", placebo = "saline"
+  INCLUDE: gene_BRCA1 = 1
+  DURATION: months = 36
+  ARMS: treatment = "Hormone_Receptor_Therapy", placebo = "placebo_control"
   MONITOR: safety = true
-  BUDGET: amount = 1200000
-  SITES: count = 2
+  BUDGET: amount = 19000000
+  SITES: count = 3
 }`,
   };
 
@@ -540,8 +541,12 @@ export default function App() {
                 />
               )}
 
+              {currentView === ViewType.GENOME_DATA && (
+                <GenomeDataView />
+              )}
+
               {/* Placeholders for new menu items */}
-              {[ViewType.COHORT, ViewType.SIMULATOR, ViewType.AUDIT, ViewType.DOCUMENTS, ViewType.SETTINGS].includes(currentView) && (
+              {[ViewType.COHORT, ViewType.AUDIT, ViewType.DOCUMENTS, ViewType.SETTINGS].includes(currentView) && (
                 <div className="flex items-center justify-center h-full">
                   <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center shadow-sm max-w-md">
                     <h2 className="text-xl font-serif text-[#0F4C81] mb-2">{currentView.charAt(0).toUpperCase() + currentView.slice(1)} Module</h2>

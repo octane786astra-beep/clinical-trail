@@ -13,7 +13,7 @@ export default function Sidebar({ currentView, onViewChange, onLogoClick }: Side
     { id: ViewType.EDITOR, label: "Protocol Design", icon: FileCode, desc: "DSL Compiler" },
     { id: ViewType.COHORT, label: "Cohort Selection", icon: Users, desc: "AI matching" },
     { id: ViewType.OPTIMIZE, label: "Optimization Engine", icon: Sliders, desc: "Quantum solver" },
-    { id: ViewType.SIMULATOR, label: "Trial Simulator", icon: Activity, desc: "Predictive outcomes" },
+    { id: ViewType.GENOME_DATA, label: "Genome Data", icon: Dna, desc: "Patient biomarker ingestion" },
     { id: ViewType.REPORTS, label: "Reports & Analytics", icon: BarChart3, desc: "Visualizations" },
     { id: ViewType.AUDIT, label: "Audit Reports", icon: FileText, desc: "Compliance PDF" },
     { id: ViewType.DOCUMENTS, label: "Document Library", icon: FolderOpen, desc: "Trial assets" },

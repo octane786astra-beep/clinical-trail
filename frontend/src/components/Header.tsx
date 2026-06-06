@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Cpu, Radio, Layers, X, RefreshCw, Sparkles } from "lucide-react";
+import { Bell, Cpu, Radio, Layers, X, RefreshCw, Sparkles, Heart } from "lucide-react";
 
 interface HeaderProps {
   compilerStatus: "idle" | "compiling" | "success" | "error";
@@ -10,6 +10,7 @@ interface HeaderProps {
     feasibilityScore: number;
     costReduction: string;
   };
+  iotStatus?: "offline" | "calibrating" | "connected" | "failsafe";
 }
 
 export default function Header({
@@ -17,6 +18,7 @@ export default function Header({
   simulationActive,
   onReset,
   systemMetrics,
+  iotStatus = "offline",
 }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeGatewayInfo, setActiveGatewayInfo] = useState<string | null>(null);
@@ -75,10 +77,10 @@ export default function Header({
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-4 border-r border-slate-200 pr-6 hidden md:flex">
           {/* API Gateway Status */}
-          <button 
+          <button
             type="button"
             onClick={() => setActiveGatewayInfo(activeGatewayInfo === "gateway" ? null : "gateway")}
-            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left" 
+            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left"
             title="Click to view API Gateway details"
           >
             <Radio className="w-3.5 h-3.5 text-[#14B8A6]" />
@@ -87,10 +89,10 @@ export default function Header({
           </button>
 
           {/* Compiler Status */}
-          <button 
+          <button
             type="button"
             onClick={() => setActiveGatewayInfo(activeGatewayInfo === "compiler" ? null : "compiler")}
-            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left" 
+            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left"
             title="Click to view Compiler details"
           >
             <Layers className={`w-3.5 h-3.5 ${compilerStatus === "compiling" ? "text-amber-500 animate-spin" : "text-[#2563EB]"}`} />
@@ -99,15 +101,33 @@ export default function Header({
           </button>
 
           {/* Quantum Processing Core */}
-          <button 
+          <button
             type="button"
             onClick={() => setActiveGatewayInfo(activeGatewayInfo === "quantum" ? null : "quantum")}
-            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left" 
+            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left"
             title="Click to view hardware details"
           >
             <Cpu className={`w-3.5 h-3.5 ${simulationActive ? "text-purple-600" : "text-[#0F4C81]"}`} />
             <span className="text-[11px] font-mono font-medium text-slate-600">Solver Engine</span>
             <span className={`w-1.5 h-1.5 rounded-full ${simulationActive ? "bg-purple-500 animate-pulse" : "bg-[#10B981]"}`} />
+          </button>
+
+          {/* IoT Telemetry Status */}
+          <button
+            type="button"
+            onClick={() => setActiveGatewayInfo(activeGatewayInfo === "iot" ? null : "iot")}
+            className="flex items-center gap-2 hover:bg-slate-50 px-2.5 py-1.5 rounded-lg transition-colors text-left"
+            title="Click to view IoT Device details"
+          >
+            <Heart className={`w-3.5 h-3.5 ${iotStatus === "connected" ? "text-emerald-500 animate-pulse" :
+                iotStatus === "failsafe" ? "text-blue-500 animate-pulse" :
+                  iotStatus === "calibrating" ? "text-amber-500 animate-spin" : "text-slate-400"
+              }`} />
+            <span className="text-[11px] font-mono font-medium text-slate-600">IoT Bridge</span>
+            <span className={`w-1.5 h-1.5 rounded-full ${iotStatus === "connected" ? "bg-emerald-500 animate-pulse" :
+                iotStatus === "failsafe" ? "bg-blue-500 animate-pulse" :
+                  iotStatus === "calibrating" ? "bg-amber-400 animate-pulse" : "bg-slate-300"
+              }`} />
           </button>
         </div>
 
@@ -170,11 +190,10 @@ export default function Header({
                     <div
                       key={n.id}
                       onClick={() => toggleNotificationRead(n.id)}
-                      className={`p-2.5 rounded-lg transition-all text-left cursor-pointer border ${
-                        n.read
+                      className={`p-2.5 rounded-lg transition-all text-left cursor-pointer border ${n.read
                           ? "bg-slate-50 border-slate-100 opacity-60"
                           : "bg-blue-50/50 border-blue-100 hover:border-blue-200"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start justify-between">
                         <p className={`text-xs ${n.read ? "text-slate-500" : "text-slate-900 font-semibold"}`}>
@@ -198,15 +217,15 @@ export default function Header({
         {/* Profile Card */}
         <button
           type="button"
-          onClick={() => alert(`Identity:\n\nUser: Dr. Alex L.\nRole: Lead Research Architect`)}
+          onClick={() => alert(`Identity:\n\nUser: Dr. Ram Murthy\nRole: Lead Research Architect`)}
           className="flex items-center gap-3 pl-2 text-left cursor-pointer group"
           title="Click to view credentials"
         >
           <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-[#0F4C81] border border-slate-200 shadow-sm group-hover:bg-[#0F4C81] group-hover:text-white transition-colors">
-            AL
+            RM
           </div>
           <div className="text-left hidden sm:block">
-            <p className="text-xs font-semibold text-slate-900 group-hover:text-[#2563EB] transition-colors">Dr. Alex L.</p>
+            <p className="text-xs font-semibold text-slate-900 group-hover:text-[#2563EB] transition-colors">Dr. Ram Murthy</p>
             <p className="text-[9px] text-slate-500 font-mono">Lead Research Architect</p>
           </div>
         </button>
@@ -226,7 +245,7 @@ export default function Header({
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          
+
           {activeGatewayInfo === "gateway" && (
             <div className="space-y-2 text-xs text-slate-600 font-mono">
               <p>📍 Status: <span className="text-[#10B981] font-semibold">ONLINE</span></p>
@@ -256,6 +275,20 @@ export default function Header({
               <p>🎛️ Threads: <span className="text-slate-900">3,120</span></p>
               <p className="text-[10px] text-slate-500 leading-relaxed pt-1">
                 Computes high-frequency combinatorial optimization paths for randomized site selections in 120ms.
+              </p>
+            </div>
+          )}
+
+          {activeGatewayInfo === "iot" && (
+            <div className="space-y-2 text-xs text-slate-600 font-mono">
+              <p>🔗 Connection: <span className={`font-semibold ${iotStatus === "connected" ? "text-emerald-500" :
+                  iotStatus === "failsafe" ? "text-blue-500" :
+                    iotStatus === "calibrating" ? "text-amber-500" : "text-red-500"
+                }`}>{iotStatus.toUpperCase()}</span></p>
+              <p>📡 Sensor: <span className="text-slate-900">MAX30102</span></p>
+              <p>🔌 Hardware: <span className="text-slate-900">ESP32 USB Serial</span></p>
+              <p className="text-[10px] text-slate-500 leading-relaxed pt-1">
+                Bridges wearable bio-data directly to the workspace database with failsafe simulation support.
               </p>
             </div>
           )}
